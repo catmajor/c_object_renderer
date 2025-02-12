@@ -30,7 +30,7 @@ int main() {
 		while (user_answer == 1){
 			printf("Enter vector %d:\n", num_entered++);
 			Vector3D *v = malloc(sizeof(Vector3D));
-			scanf("%f %f %f", &v->x, &v->y, &v->z);
+			scanf("%f %f %f", (*v) + V_X, (*v) + V_Y, (*v) + V_Z);
 			head = add_to_list(head, v);
 			puts("Add another vector? 1 to add, anything else to continue");
 			scanf("%d", &user_answer);

@@ -5,14 +5,12 @@
 Vector3D CAMERA_HORIZONTAL_UNIT_VECTOR = {1, 0, 0};
 Vector3D CAMERA_VERTICAL_UNIT_VECTOR = {0, 1, 0};
 int SCREEN[SCREEN_HEIGHT][SCREEN_WIDTH] = {0};
-float dot_vectors(Vector3D *v1, Vector3D *v2) {
-	return v1->x*v2->x + v1->y*v2->y + v1->z*v2->z;
-}
+
 float get_x_projection(Vector3D *v) {
-	return (v->x*FOV)/(v->z+FOV)*PIXELS_PER_UNIT_X;
+	return ((*v)[V_X] * FOV) / ((*v)[V_Z] + FOV) * PIXELS_PER_UNIT_X;
 }
 float get_y_projection(Vector3D *v) {
-	return (v->y*FOV)/(v->z+FOV)*PIXELS_PER_UNIT_Y;
+	return ((*v)[V_Y] * FOV) / ((*v)[V_Z] + FOV) * PIXELS_PER_UNIT_Y;
 }
 void render_frame(Vector3D_List* head) {
 	reset_screen();
@@ -53,9 +51,6 @@ void free_list(Vector3D_List* head) {
 		free(head);
 		head = next;
 	}
-}
-void print_vector3D(Vector3D *v) {
-	printf("[%.2f, %.2f, %.2f]\n", v->x, v->y, v->z);
 }
 void print_list(Vector3D_List *head) {
 	while (head != NULL) {
