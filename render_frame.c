@@ -37,6 +37,10 @@ void render_frame(Vector3D_List* head) {
 		multiply_m3Dv3D_inplace(transformation_matrix, head->val);
 		head = head->next;
 	}
+	#ifndef WINDOWS_ENABLED
+		printf("\033[H");
+		fflush(stdout);
+	#endif
 	print_screen();
 	fflush(stdout);
 }
@@ -83,6 +87,11 @@ void reset_screen() {
 }
 void print_screen() {
 	for (int i = SCREEN_HEIGHT - 1; i >= 0; i--) {
+		#ifdef WINDOWS_ENABLED
+			COORD coord = {0, i};
+			SetConsoleCursorPosition(hOut, coord);
+			fflush(stdout);
+		#endif
 		for (int j = 0; j < SCREEN_WIDTH; j++) {
 			if (SCREEN[i][j] == 1) {
 				printf("*");
@@ -90,7 +99,9 @@ void print_screen() {
 				printf(" ");
 			}
 		}
-		printf("\n");
+		#ifndef WINDOWS_ENABLED
+			printf("\n");
+		#endif
 	}
 
 }

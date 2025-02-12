@@ -5,12 +5,16 @@
 #include "vector3D.h"
 #include "matrix3D.h"
 #include <sys/time.h>
-#define SIN_VAL_Y 0.08715574274
-#define COS_VAL_Y 0.99619469809
-#define SIN_VAL_X 0.0348994967
-#define COS_VAL_X 0.99939082701
-#define SIN_VAL_Z 0.01745240643
-#define COS_VAL_Z 0.99984769515
+#ifdef WINDOWS_ENABLED
+#include <windows.h>
+HANDLE hOut;
+#endif
+#define SIN_VAL_Y 0.0174524064372835
+#define COS_VAL_Y 0.999847695156391
+#define SIN_VAL_X 0.00436330928474657
+#define COS_VAL_X 0.999990480720734
+#define SIN_VAL_Z 0.0010908305661644
+#define COS_VAL_Z 0.999999405044161
 Matrix3D* transformation_matrix;
 long long time_in_milliseconds();
 int main() {
@@ -58,7 +62,17 @@ int main() {
 	free(transform1);
 	free(transform2);
 	free(transform3);
-	print_matrix3D(transformation_matrix);
+	#ifdef WINDOWS_ENABLED
+		hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+		DWORD dwMode = 0;
+		GetConsoleMode(hOut, &dwMode);
+		SetConsoleMode(hOut, dwMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+		CONSOLE_CURSOR_INFO cursorInfo;
+		GetConsoleCursorInfo(hOut, &cursorInfo);
+		cursorInfo.bVisible = FALSE;
+		SetConsoleCursorInfo(hOut, &cursorInfo);
+		system("cls");
+	#endif
 	user_answer = 0;
 	setvbuf(stdout, NULL, _IOFBF, BUFSIZ);
 	long long then = time_in_milliseconds();

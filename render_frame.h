@@ -6,9 +6,14 @@
 #define PIXELS_PER_UNIT_X 5
 #define PIXELS_PER_UNIT_Y 2.5
 #define SHOW_INFO 0
-#define REFRESH_RATE 150
+#define REFRESH_RATE 20
 #include "vector3D.h"
 #include "matrix3D.h"
+#ifdef _WIN32
+#define WINDOWS_ENABLED
+#include <windows.h>
+extern HANDLE hOut;
+#endif
 struct three_vector_linked_list {
 	Vector3D *val;
 	struct three_vector_linked_list *next;
