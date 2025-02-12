@@ -10,10 +10,10 @@
 #define V_Z 2
 #define V_W 3
 #include <stdio.h>
-typedef float Vector3D[4];
+typedef double Vector3D[4];
 Vector3D* Vector3D_new_0();
-Vector3D* Vector3D_new_3(float x, float y, float z);
-Vector3D* Vector3D_new_4(float x, float y, float z, float w);
-float dot_vectors(Vector3D *v1, Vector3D *v2); 
+Vector3D* Vector3D_new_3(double x, double y, double z);
+Vector3D* Vector3D_new_4(double x, double y, double z, double w);
+double dot_vectors(Vector3D *v1, Vector3D *v2); 
 void print_vector3D(Vector3D *v);
 #endif
