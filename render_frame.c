@@ -7,10 +7,10 @@ Vector3D CAMERA_VERTICAL_UNIT_VECTOR = {0, 1, 0};
 int SCREEN[SCREEN_HEIGHT][SCREEN_WIDTH] = {0};
 
 double get_x_projection(Vector3D *v) {
-	return ((*v)[V_X] * FOV) / ((*v)[V_Z] + FOV) * PIXELS_PER_UNIT_X;
+	return ((*v)[V_X] * FOV) / ((*v)[V_Z] + FOV) * PIXELS_PER_UNIT_X + 0.5;
 }
 double get_y_projection(Vector3D *v) {
-	return ((*v)[V_Y] * FOV) / ((*v)[V_Z] + FOV) * PIXELS_PER_UNIT_Y;
+	return ((*v)[V_Y] * FOV) / ((*v)[V_Z] + FOV) * PIXELS_PER_UNIT_Y + 0.5;
 }
 void render_frame_info(Vector3D_List* head) {
 	reset_screen();
@@ -94,7 +94,7 @@ void print_screen() {
 		#endif
 		for (int j = 0; j < SCREEN_WIDTH; j++) {
 			if (SCREEN[i][j] == 1) {
-				printf("*");
+				printf(".");
 			} else {
 				printf(" ");
 			}
@@ -117,8 +117,5 @@ void print_screen_info() {
 		}
 		printf("|\n");
 	}
-
-}
-void make_edge(Vector3D_List *head, Vector3D *origin, Vector3D *direction, double magnitude) {
 
 }

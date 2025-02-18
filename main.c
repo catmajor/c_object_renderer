@@ -5,18 +5,28 @@
 #include "vector3D.h"
 #include "matrix3D.h"
 #include <sys/time.h>
+#include <pthread.h>
 #ifdef WINDOWS_ENABLED
 #include <windows.h>
 HANDLE hOut;
 #endif
-#define SIN_VAL_Y 0.0174524064372835
-#define COS_VAL_Y 0.999847695156391
-#define SIN_VAL_X 0.00436330928474657
-#define COS_VAL_X 0.999990480720734
-#define SIN_VAL_Z 0.0010908305661644
-#define COS_VAL_Z 0.999999405044161
 Matrix3D* transformation_matrix;
 long long time_in_milliseconds();
+struct thread_utilities {
+	Vector3D_List* head;
+	int* stop;
+	long long* then;
+};
+struct thread_utilities utilities;
+void* run_animation(void* arg) {
+	while(!*utilities.stop) {
+		long long now = time_in_milliseconds();
+		if (now - *utilities.then > REFRESH_RATE) {
+			*utilities.then = now;
+			render_frame(utilities.head);
+		}
+	}
+}
 int main() {
 	puts("running! c:");
 	Vector3D_List *head = NULL;
@@ -50,18 +60,15 @@ int main() {
 			scanf("%d", &user_answer);
 		}
 	}
-	Matrix3D translate_to_origin = {1, 0, 0, -0.5, 0, 1, 0, 0, 0, 0, 1, -5, 0, 0, 0, 1};
-	Matrix3D translate_back = {1, 0, 0, 0.5, 0, 1, 0, 0, 0, 0, 1, 5, 0, 0, 0, 1};
-	Matrix3D rotate_matrix_y_axis = {COS_VAL_Y, 0, SIN_VAL_Y, 0, 0, 1, 0, 0, -SIN_VAL_Y, 0, COS_VAL_Y, 0, 0, 0, 0, 1};
-	Matrix3D rotate_matrix_x_axis = {1, 0, 0, 0, 0, COS_VAL_X, -SIN_VAL_X, 0, 0, SIN_VAL_X, COS_VAL_X, 0, 0, 0, 0, 1};
-	Matrix3D rotate_matrix_z_axis = {COS_VAL_Z, -SIN_VAL_Z, 0, 0, SIN_VAL_Z, COS_VAL_Z, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-	Matrix3D* transform1 = multiply_matrices3D(&translate_back, &rotate_matrix_y_axis);
-	Matrix3D* transform2 = multiply_matrices3D(transform1, &rotate_matrix_x_axis);
-	Matrix3D* transform3 = multiply_matrices3D(transform2, &rotate_matrix_z_axis);
-	transformation_matrix = multiply_matrices3D(transform3, &translate_to_origin);
+	Matrix3D* translate_back = create_translation_matrix(0, 0, 5);
+	Matrix3D* translate_to_origin = create_translation_matrix(0, 0, -5);
+	Matrix3D* rotation_matrix = create_rotation_matrix(0.02, 0.02, 0.02);
+	Matrix3D* transform1 = multiply_matrices3D(translate_back, rotation_matrix);
+	transformation_matrix = multiply_matrices3D(transform1, translate_to_origin);
 	free(transform1);
-	free(transform2);
-	free(transform3);
+	free(rotation_matrix);
+	free(translate_back);
+	free(translate_to_origin);
 	#ifdef WINDOWS_ENABLED
 		hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 		DWORD dwMode = 0;
@@ -76,20 +83,23 @@ int main() {
 	user_answer = 0;
 	setvbuf(stdout, NULL, _IOFBF, BUFSIZ);
 	long long then = time_in_milliseconds();
-	while(!SHOW_INFO) {
-		long long now = time_in_milliseconds();
-		if (now - then > REFRESH_RATE) {
-			then = now;
-			render_frame(head);
-		}
-	}
-	while(SHOW_INFO) {
-		long long now = time_in_milliseconds();
-		if (now - then > REFRESH_RATE) {
-			then = now;
-			render_frame(head);
-		}
-	}
+	int stop = 0;
+	utilities.head = head;
+	utilities.stop = &stop;
+	utilities.then = &then;
+	pthread_t thread;
+	pthread_create(&thread, NULL, run_animation, NULL);
+	scanf("%d", utilities.stop); 
+	*utilities.stop = 1;
+	pthread_join(thread, NULL);
+	#ifdef WINDOWS_ENABLED
+		cursorInfo.bVisible = TRUE;
+		SetConsoleCursorInfo(hOut, &cursorInfo);
+		COORD coord = {0, SCREEN_HEIGHT};
+		SetConsoleCursorPosition(hOut, coord);
+		fflush(stdout);
+	#endif
+	printf("stopped");
 	free_list(head);
 	return 0;
 }

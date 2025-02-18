@@ -37,3 +37,49 @@ void multiply_m3Dv3D_inplace(Matrix3D*m, Vector3D*v) {
     (*v)[V_Z] = new_z;
     (*v)[V_W] = new_w;
 }
+Matrix3D* create_rotation_matrix(double x_axis_rot_rad, double y_axis_rot_rad, double z_axis_rot_rad) {
+    Matrix3D* ret = malloc(sizeof(Matrix3D));
+    double sin_g = sin(x_axis_rot_rad);
+    double cos_g = cos(x_axis_rot_rad);
+    double sin_b = sin(y_axis_rot_rad);
+    double cos_b = cos(y_axis_rot_rad);
+    double sin_a = sin(z_axis_rot_rad);
+    double cos_a = cos(z_axis_rot_rad);
+    (*ret)[0] = cos_a*cos_b;
+    (*ret)[1] = cos_a*sin_b*sin_g - sin_a*cos_g;
+    (*ret)[2] = cos_a*sin_b*cos_g + sin_a*sin_g;
+    (*ret)[3] = 0;
+    (*ret)[4] = sin_a*cos_b;
+    (*ret)[5] = sin_a*sin_b*sin_g + cos_a*cos_g;
+    (*ret)[6] = sin_a*sin_b*cos_g - cos_a*sin_g;
+    (*ret)[7] = 0;
+    (*ret)[8] = -sin_b;
+    (*ret)[9] = cos_b*sin_g;
+    (*ret)[10] = cos_b*cos_g;
+    (*ret)[11] = 0;
+    (*ret)[12] = 0;
+    (*ret)[13] = 0;
+    (*ret)[14] = 0;
+    (*ret)[15] = 1;
+    return ret;
+}
+Matrix3D* create_translation_matrix(double delta_x, double delta_y, double delta_z) {
+    Matrix3D* ret = malloc(sizeof(Matrix3D));
+    (*ret)[0] = 1;
+    (*ret)[1] = 0;
+    (*ret)[2] = 0;
+    (*ret)[3] = delta_x;
+    (*ret)[4] = 0;
+    (*ret)[5] = 1;
+    (*ret)[6] = 0;
+    (*ret)[7] = delta_y;
+    (*ret)[8] = 0;
+    (*ret)[9] = 0;
+    (*ret)[10] = 1;
+    (*ret)[11] = delta_z;
+    (*ret)[12] = 0;
+    (*ret)[13] = 0;
+    (*ret)[14] = 0;
+    (*ret)[15] = 1;
+    return ret;
+}
